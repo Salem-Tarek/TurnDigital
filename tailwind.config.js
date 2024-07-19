@@ -2,7 +2,8 @@
 module.exports = {
   content: [
     "./index.html",
-    "./src/**/*.{vue,js,jsx}"
+    "./src/**/*.{vue,js,jsx}",
+    "./node_modules/tw-elements/js/**/*.js"
   ],
   theme: {
     container: {
@@ -11,7 +12,11 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "red"
+          DEFAULT: "#4b6bfb"
+        },
+        light: {
+          DEFAULT: "#f4f4f5",
+          darker: "#a4a5ab"
         }
       }
     }
