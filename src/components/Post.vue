@@ -1,5 +1,5 @@
 <template>
-  <div class="border border-light-darker p-4 rounded-lg">
+  <router-link :to="{ name: 'PostPage', params: { id: post.id } }" class="transition-all duration-300 hover:-translate-y-2 border border-light-darker p-4 rounded-lg">
     <div class="w-full rounded-md overflow-hidden mb-3">
       <img class="w-full" :src="post.image" :alt="post.title" />
     </div>
@@ -18,7 +18,7 @@
         <span class="text-base text-light-darker">{{ post.date }}</span>
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>

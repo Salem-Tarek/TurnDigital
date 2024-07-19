@@ -2,9 +2,9 @@
   <header class="py-2">
     <div class="container">
       <div class="flex justify-between items-center">
-        <div class="logo">
+        <router-link to="/" class="logo">
           <img src="@/assets/logo2.png" alt="LOGO">
-        </div>
+        </router-link>
         <ul class="list-none hidden lg:flex gap-3 items-center">
           <li>
             <router-link to="">Home</router-link>

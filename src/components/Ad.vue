@@ -1,6 +1,6 @@
 <template>
   <section class="py-8 my-4">
-    <div class="max-w-[750px] shadow mx-auto">
+    <div class="max-w-[850px] shadow mx-auto">
       <div class="bg-light text-center py-2 px-3">
         <span class="text-sm">Advertisment</span>
         <p class="font-bold text-base">You can place ads</p>
