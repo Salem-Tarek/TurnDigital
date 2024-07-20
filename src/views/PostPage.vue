@@ -99,7 +99,7 @@ export default {
           this.scrollToTop();
         })
         .catch(err => {
-          console.log(err.response);
+          console.log(err);
         })
     },
     scrollToTop(){

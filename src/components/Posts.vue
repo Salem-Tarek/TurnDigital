@@ -2,7 +2,7 @@
   <section class="my-4">
     <div class="container">
       <div v-if="posts && posts.length" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <Post v-for="post in posts" :key="post.id" :post="post" />
+        <Post v-for="post in posts" :key="post.id" :loading="isLoading" :post="post" />
       </div>
       <div class="py-8" v-else>
         <h3 class="text-center text-xl">
@@ -10,22 +10,46 @@
         </h3>
       </div>
       <div class="py-4 flex gap-3 justify-center" v-if="posts && posts.length">
-        <button @click="loadData('more')" v-if="posts.length < totalPosts.length" class="max-w-[300px] bg-primary py-3 px-2 text-center text-white flex items-center gap-2 rounded-md hover:bg-primary/80">
+        <button @click="loadData('more')" v-if="posts.length < totalPosts.length" :class="['max-w-[300px] bg-primary py-3 px-2 text-center text-white flex items-center gap-2 rounded-md hover:bg-primary/80 relative', isLoading ? 'pointer-none' : '']">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
           </svg>
           <span>Load More</span>
+          <div v-if="isLoading" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+              <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"></span>
+            </div>
+          </div>  
         </button>  
-        <button @click="loadData('less')" v-if="page > 1 && !this.$route.query.allShown" class="max-w-[300px] bg-primary p-3 text-center text-white rounded-md flex gap-2 items-center hover:bg-primary/80">
+        <button @click="loadData('less')" v-if="page > 1 && !this.$route.query.allShown" :class="['max-w-[300px] bg-primary py-3 px-2 text-center text-white flex items-center gap-2 rounded-md hover:bg-primary/80 relative', isLoading ? 'pointer-none' : '']">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8"/>
           </svg>
           <span>Load Less</span>
+          <div v-if="isLoading" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+              <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"></span>
+            </div>
+          </div>
         </button>
       </div>
       <div class="flex justify-end">
-        <button @click="this.$router.push({ query: { loadMore: 0, allShown: true } });" v-if="posts.length !== totalPosts.length" class="max-w-[300px] bg-primary p-3 text-center text-white w-full rounded-md hover:bg-primary/80">View All Posts</button>
-        <button @click="this.$router.push({ query: { loadMore: 1, allShown: false } });scrollToTop();" v-if="posts.length === totalPosts.length && this.$route.query.allShown" class="max-w-[300px] bg-primary p-3 text-center text-white w-full rounded-md hover:bg-primary/80">View Some Posts</button>
+        <button @click="this.$router.push({ query: { loadMore: 0, allShown: true } });" v-if="posts.length !== totalPosts.length" :class="['max-w-[300px] bg-primary p-3 text-center text-white flex items-center gap-2 rounded-md hover:bg-primary/80 relative', isLoading ? 'pointer-none' : '']">
+          View All Posts
+          <div v-if="isLoading" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+              <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"></span>
+            </div>
+          </div>
+        </button>
+        <button @click="this.$router.push({ query: { loadMore: 1, allShown: false } });scrollToTop();" v-if="posts.length === totalPosts.length && this.$route.query.allShown" :class="['max-w-[300px] bg-primary p-3 text-center text-white flex items-center gap-2 rounded-md hover:bg-primary/80 relative', isLoading ? 'pointer-none' : '']">
+          View Some Posts
+          <div v-if="isLoading" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+              <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"></span>
+            </div>
+          </div>
+        </button>
       </div>
     </div>
   </section>
@@ -470,7 +494,8 @@ export default {
       page: 1,
       postsPerPage: 10,
       totalPosts: [],
-      totalLoadMoreTimes: 0
+      totalLoadMoreTimes: 0,
+      isLoading: false
     }
   },
   components: {
@@ -478,6 +503,7 @@ export default {
   },
   methods: {
     getPosts(scrollToTop = true){
+      this.isLoading = true;
       axios.get('https://raw.githubusercontent.com/Salem-Tarek/TurnDigital/master/src/assets/json/posts.json')
         .then(res => {
           this.posts = res.data?.data || [];
@@ -495,7 +521,10 @@ export default {
           }
         })
         .catch(err => {
-          console.log(err.response);
+          console.log(err);
+        })
+        .finally(() => {
+          this.isLoading = false;
         })
     },
     scrollToTop(){
