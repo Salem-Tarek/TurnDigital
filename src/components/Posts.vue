@@ -1,8 +1,31 @@
 <template>
   <section class="my-4">
     <div class="container">
-      <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div v-if="posts && posts.length" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <Post v-for="post in posts" :key="post.id" :post="post" />
+      </div>
+      <div class="py-8" v-else>
+        <h3 class="text-center text-xl">
+          No Data To show
+        </h3>
+      </div>
+      <div class="py-4 flex gap-3 justify-center" v-if="posts && posts.length">
+        <button @click="loadData('more')" v-if="posts.length < totalPosts.length" class="max-w-[300px] bg-primary py-3 px-2 text-center text-white flex items-center gap-2 rounded-md hover:bg-primary/80">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+          </svg>
+          <span>Load More</span>
+        </button>  
+        <button @click="loadData('less')" v-if="page > 1 && !this.$route.query.allShown" class="max-w-[300px] bg-primary p-3 text-center text-white rounded-md flex gap-2 items-center hover:bg-primary/80">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8"/>
+          </svg>
+          <span>Load Less</span>
+        </button>
+      </div>
+      <div class="flex justify-end">
+        <button @click="this.$router.push({ query: { loadMore: 0, allShown: true } });" v-if="posts.length !== totalPosts.length" class="max-w-[300px] bg-primary p-3 text-center text-white w-full rounded-md hover:bg-primary/80">View All Posts</button>
+        <button @click="this.$router.push({ query: { loadMore: 1, allShown: false } });scrollToTop();" v-if="posts.length === totalPosts.length && this.$route.query.allShown" class="max-w-[300px] bg-primary p-3 text-center text-white w-full rounded-md hover:bg-primary/80">View Some Posts</button>
       </div>
     </div>
   </section>
@@ -443,25 +466,87 @@ export default {
       //     conclusion: "Traveling is an art form that requires a blend of planning, preparation, and spontaneity. By following these tips and tricks, you can make the most of your journey and create memories that last a lifetime. So pack your bags, embrace the adventure, and enjoy the ride 25252525."
       //   },
       // ],
-      posts: []
+      posts: [],
+      page: 1,
+      postsPerPage: 10,
+      totalPosts: [],
+      totalLoadMoreTimes: 0
     }
   },
   components: {
     Post
   },
   methods: {
-    getPosts(){
+    getPosts(scrollToTop = true){
       axios.get('https://raw.githubusercontent.com/Salem-Tarek/TurnDigital/master/src/assets/json/posts.json')
         .then(res => {
           this.posts = res.data?.data || [];
+          if(this.posts && this.posts.length){
+            this.totalPosts = this.posts;
+            this.totalLoadMoreTimes = Math.ceil(this.totalPosts.length / this.postsPerPage);
+            if(this.$route.query.allShown){
+              this.posts = this.totalPosts;
+            }else if(this.page){
+              this.posts = this.totalPosts.slice(0, parseInt(this.page)*this.postsPerPage);
+            }
+          }
+          if(scrollToTop){
+            this.scrollToTop();
+          }
         })
         .catch(err => {
           console.log(err.response);
         })
+    },
+    scrollToTop(){
+      window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'smooth' // Optional, for smooth scrolling
+      });
+    },
+    loadData(mode){
+      if(mode === "more"){
+        if(this.page < this.totalLoadMoreTimes){
+          this.page++;
+          this.$router.push({ query: { loadMore: this.page } });
+        }
+      }else if (mode === "less"){
+        if(this.page > 1){
+          this.page--;
+          this.$router.push({ query: { loadMore: this.page } });
+        }
+      }
     }
   },
   mounted(){
+    if(this.$route.query.loadMore){
+      if(parseInt(this.$route.query.loadMore) > this.totalLoadMoreTimes){
+        this.page = 1;
+        this.$router.push({ query: { loadMore: this.page } });
+      }else{
+        this.page = this.$route.query.loadMore;
+      }
+    }
     this.getPosts();
+  },
+  watch: {
+    '$route': {
+      handler(){
+        let queries = { ...this.$route.query };
+        let validQueries = {};
+        
+        for(let query in queries){
+          if(queries[query] != 0 && queries[query] && queries[query] != false && queries[query] != 'false'){
+            validQueries[query] = queries[query];
+          }
+        }
+        this.$router.push({ name: this.$route.name, query: { ...validQueries } });
+        
+        this.getPosts(false);
+      },
+      deep: true
+    }
   }
 };
 </script>
